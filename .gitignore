@@ -1,0 +1,4 @@
+compiled/
+*.rktd
+*.log
+.DS_Store
