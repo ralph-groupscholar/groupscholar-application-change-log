@@ -2,7 +2,7 @@
 
 (require racket/match)
 
-(provide format-change format-summary)
+(provide format-change format-summary format-group-summary)
 
 (define (format-change row)
   (match-define (vector change-id scholar-id application-id change-type previous-value new-value changed-by change-reason changed-at source-system) row)
@@ -18,10 +18,13 @@
     (format "  source: ~a" source-system))
    "\n"))
 
-(define (format-summary rows)
-  (define header "Change Type | Count")
+(define (format-group-summary rows label)
+  (define header (format "~a | Count" label))
   (define lines
     (for/list ([row rows])
-      (match-define (vector change-type count) row)
-      (format "~a | ~a" change-type count)))
+      (match-define (vector group-value count) row)
+      (format "~a | ~a" group-value count)))
   (string-join (cons header lines) "\n"))
+
+(define (format-summary rows)
+  (format-group-summary rows "Change Type"))

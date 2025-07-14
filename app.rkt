@@ -10,8 +10,8 @@
   (displayln "")
   (displayln "Commands:")
   (displayln "  add --scholar SCH-123 --application APP-456 --type status_update --from submitted --to under_review --by ops@groupscholar.com --reason \"Initial review\" [--source ops_console]")
-  (displayln "  list [--limit 10] [--since 2026-02-01T00:00:00Z]")
-  (displayln "  summary [--since 2026-02-01T00:00:00Z]")
+  (displayln "  list [--limit 10] [--since 2026-02-01T00:00:00Z] [--scholar SCH-123] [--application APP-456] [--type status_update] [--by ops@groupscholar.com] [--source ops_console]")
+  (displayln "  summary [--since 2026-02-01T00:00:00Z] [--group type|source|by|reason]")
   (displayln "")
   (displayln "Environment: PGHOST PGPORT PGDATABASE PGUSER PGPASSWORD"))
 
@@ -63,19 +63,31 @@
     [(string=? command "list")
      (define limit 10)
      (define since #f)
+     (define scholar-id #f)
+     (define application-id #f)
+     (define change-type #f)
+     (define changed-by #f)
+     (define source-system #f)
      (command-line
       #:program "groupscholar-application-change-log list"
       #:argv (list->vector rest-args)
       ["--limit" l "Limit" (set! limit (string->number l))]
-      ["--since" s "Since timestamp" (set! since s)])
-     (displayln (cmd-list limit since))]
+      ["--since" s "Since timestamp" (set! since s)]
+      ["--scholar" id "Scholar ID" (set! scholar-id id)]
+      ["--application" id "Application ID" (set! application-id id)]
+      ["--type" type "Change type" (set! change-type type)]
+      ["--by" by "Changed by" (set! changed-by by)]
+      ["--source" source "Source system" (set! source-system source)])
+     (displayln (cmd-list limit since scholar-id application-id change-type changed-by source-system))]
     [(string=? command "summary")
      (define since #f)
+     (define group #f)
      (command-line
       #:program "groupscholar-application-change-log summary"
       #:argv (list->vector rest-args)
-      ["--since" s "Since timestamp" (set! since s)])
-     (displayln (cmd-summary since))]
+      ["--since" s "Since timestamp" (set! since s)]
+      ["--group" g "Group by type|source|by|reason" (set! group g)])
+     (displayln (cmd-summary since group))]
     [else
      (displayln (format "Unknown command: ~a" command))
      (usage)]))
